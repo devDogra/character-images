@@ -3,8 +3,12 @@ const fs = require("fs/promises");
 
 // const url = "./khabib3_smol.png";
 // const url = "./fitebig_small.png";
-const url = "./flower.PNG";
+// const url = "./flower.PNG";
+// const url = "./khabib2.jpg";
+const url = "./flower2.png";
 const breaklineMarker = "BR";
+const scaleToFitWidth = 100;
+const scaleToFitHeight = 80;
 
 //TODO: scale to fit (use .scaleToFit())
 function getBlackColorCode(intensity) {
@@ -65,6 +69,7 @@ function getHTMLPage(html) {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Document</title>
+            <link rel="stylesheet" href="./styles.css">
         </head>
         <body>
             ${html}
@@ -84,7 +89,7 @@ function getOutputHtml(intensityArray, chars, fontsz) {
     } else {
       let hex = getBlackColorCode(val);
       let char = chars[charidx];
-      let elstr = `<b style="color: ${hex}; font-size: ${fontsz}"> ${char} </b>`;
+      let elstr = `<b style="font-size: ${fontsz}; color: ${hex}"> ${char} </b>`;
       html += elstr;
 
       charidx = charidx == charidxlim ? 0 : charidx + 1;
@@ -96,15 +101,16 @@ function getOutputHtml(intensityArray, chars, fontsz) {
 async function main() {
   // Load an image using Jimp
   const image = await Jimp.read(url);
+  image.scaleToFit(scaleToFitWidth, scaleToFitHeight);
   const width = image.getWidth();
   const height = image.getHeight();
+  console.log({width, height}); 
 
   // Create an array to store intensity values
   const intensityArray = getIntensityArray(image);
   const fontsz = getFontSize(width);
 
-  //   const chars = "JOLENE";
-  const chars = "LALITA";
+  const chars = "JOLENE";
   const html = getOutputHtml(intensityArray, chars, fontsz);
 
   const page = getHTMLPage(html);
