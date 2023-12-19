@@ -28,6 +28,7 @@ function getBlackColorCode(intensity) {
   if (intensity < 0 || intensity > 255) {
     throw new Error("Intensity value must be between 0 and 255.");
   }
+  // const hex = intensity.toString(16).padStart(2, "0");
   const hex = intensity.toString(16).padStart(2, "0");
   const blackColorCode = "#" + hex + hex + hex;
   return blackColorCode;
@@ -52,6 +53,7 @@ function getIntensityArray(image) {
         pixelColor.b
       );
       intensityArray.push(intensity);
+      // intensityArray.push(255 - intensity);
     }
     intensityArray.push("BR");
   }
