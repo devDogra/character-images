@@ -145,8 +145,18 @@ app.post('/upload', upload.single('imageFile'), async (req, res) => {
   fs.renameSync(req.file.path, newPath);
 
   const imageHTML = await main(newPath, req.body.characterificationString);
-  res.send(imageHTML);
+  const outputHTML = `
+  <html>
+    <body style="display: flex; justify-content: center; align-items:center; height: 95vh; width: 95vw;">
+      <div style="background-color: black; display: inline-block; ">
+      ${imageHTML}
+      </div>
+    </body>
+  </html>
+  `
+  res.send(outputHTML);
 })
+
 
 
 app.get('/', async (req, res) => {
