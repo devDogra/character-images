@@ -1,14 +1,27 @@
 const Jimp = require("jimp");
-const fs = require("fs/promises");
+const express = require('express');
+const fs = require("fs");
+const multer = require('multer');
+const path = require('path');
+
+const PORT = 3000;
+
+const app = express();
+const upload = multer({ dest: 'uploads/' })
+
+app.use(express.json());
+app.use(express.urlencoded());
 
 // const url = "./khabib3_smol.png";
 // const url = "./fitebig_small.png";
 // const url = "./flower.PNG";
 // const url = "./khabib2.jpg";
-const url = "./flower2.png";
+// const url = "./flower2.png";
 const breaklineMarker = "BR";
 const scaleToFitWidth = 100;
 const scaleToFitHeight = 80;
+// const chars = "JOLENE";
+
 
 //TODO: scale to fit (use .scaleToFit())
 function getBlackColorCode(intensity) {
@@ -98,24 +111,47 @@ function getOutputHtml(intensityArray, chars, fontsz) {
   return html;
 }
 
-async function main() {
+async function main(url, chars) {
   // Load an image using Jimp
   const image = await Jimp.read(url);
   image.scaleToFit(scaleToFitWidth, scaleToFitHeight);
   const width = image.getWidth();
   const height = image.getHeight();
-  console.log({width, height}); 
 
   // Create an array to store intensity values
   const intensityArray = getIntensityArray(image);
   const fontsz = getFontSize(width);
 
-  const chars = "JOLENE";
+  // Get image HTML
   const html = getOutputHtml(intensityArray, chars, fontsz);
-
   const page = getHTMLPage(html);
 
-  await fs.writeFile("output.html", page);
+  return page;
+  // await fs.writeFile("output.html", page);
 }
 
-main().then().catch();
+
+app.get('/upload', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'upload.html'));
+})
+
+app.post('/upload', upload.single('imageFile'), async (req, res) => {
+  console.log(req.body);
+  console.log(req.file);
+
+  const newPath = path.join(req.file.destination, `${req.body.imageName}.png`);
+  fs.renameSync(req.file.path, newPath);
+
+  const imageHTML = await main(newPath, req.body.characterificationString);
+  res.send(imageHTML);
+})
+
+
+app.get('/', async (req, res) => {
+  res.send(imageHTML);
+})
+
+
+app.listen(PORT, () => {
+  console.log(`Server listening at http://localhost:${PORT}`)
+})
