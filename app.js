@@ -133,6 +133,10 @@ async function main(url, chars) {
 }
 
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+})
+
 app.get('/upload', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'upload.html'));
 })
@@ -147,9 +151,13 @@ app.post('/upload', upload.single('imageFile'), async (req, res) => {
   const imageHTML = await main(newPath, req.body.characterificationString);
   const outputHTML = `
   <html>
-    <body style="display: flex; justify-content: center; align-items:center; height: 95vh; width: 95vw;">
+    <body style="display: flex; justify-content: center; align-items:center; height: 95vh; width: 95vw; flex-direction: column">
+      <div>
+        <a style="font-size: 10rem;" href="/">Back to home</a>
+      </div>
+      <br>
       <div style="background-color: black; display: inline-block; ">
-      ${imageHTML}
+        ${imageHTML}
       </div>
     </body>
   </html>
